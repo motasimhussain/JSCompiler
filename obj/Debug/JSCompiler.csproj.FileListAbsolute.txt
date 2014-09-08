@@ -1,0 +1,6 @@
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\bin\Debug\JSCompiler.exe.config
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\bin\Debug\JSCompiler.exe
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\bin\Debug\JSCompiler.pdb
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.csprojResolveAssemblyReference.cache
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.exe
+c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.pdb
