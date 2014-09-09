@@ -13,9 +13,10 @@ namespace JSCompiler
         {
             Console.WriteLine("Enter the path of the file to be read!!");
             string path = Console.ReadLine();
-            lexAnalyse la = new lexAnalyse(path);
-
-            string[] lineArr = la.readFile();
+            fileReader fr = new fileReader(path);
+   
+            string[] lineArr = fr.readFile();
+            lexAnalyser la = new lexAnalyser(lineArr);
 
             Console.ReadLine();
         }

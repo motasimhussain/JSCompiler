@@ -7,11 +7,12 @@ using System.IO;
 
 namespace JSCompiler
 {
-    class lexAnalyse
+    class fileReader
     {
         public string path;
 
-        public lexAnalyse(string path) {
+        public fileReader(string path)
+        {
             this.path = path;
         }
 
@@ -26,7 +27,7 @@ namespace JSCompiler
                 lineArr = new string[count];
 
                 while ((line = file.ReadLine()) != null){     // Storing individual lines in an array
-                    Console.WriteLine(line);
+                    Console.WriteLine(counter+"> "+line);
                     lineArr[counter] = line;
                     counter++;
                 }
@@ -40,7 +41,7 @@ namespace JSCompiler
 
             }
 
-            return lineArr=new string[0];                     //returning empy array if file read fails!
+            return lineArr=new string[0];                     //returning empty array if file read fails!
         }
     }
 }
