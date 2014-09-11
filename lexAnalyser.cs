@@ -10,10 +10,14 @@ namespace JSCompiler
     class lexAnalyser
     {
         string[] lines;
-        string outPath;
+        string outPath,temp;
         char[] chArr;
-        string temp;
+
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
         int lineNum = 0;
+
+        char[] sep = { ' ', '.', '\t' };
 
         int[,] tt_id ={{1,1,2},{1,1,1},{2,2,2}} ;
         int[,] tt_num = { {1 , 3}, {1 , 2}, {2 , 4},{3 , 4},{4 , 4} };
@@ -33,16 +37,9 @@ namespace JSCompiler
                 bool isNum = dfa_num(chArr);
 
                 if (isId){
-                    try{
-                        System.IO.StreamWriter file = new System.IO.StreamWriter(outPath, true);
-                        file.Write("(ID,"+temp+ ",line),");
-                        file.Close();
-                    }
-                    catch (Exception e){
-                        Console.WriteLine("The file could not be created:");
-                        Console.WriteLine(e.Message);
-
-                    }
+                    writeToFile("ID", temp, lineNum);
+                }else if(isNum){
+                    //writeToFile("NUM", temp, lineNum);      //buggy
                 }
 
                 lineNum++;
@@ -62,6 +59,7 @@ namespace JSCompiler
             }
             if ((state == 1) || (state == 2) || (state == 3))
             {
+                //temp = new string(chArr);      //Still buggy
                 return true;
             }
             else
@@ -88,11 +86,23 @@ namespace JSCompiler
             int state = 0,f_state=1,i=0;
             while (i < chArr.Length) {
                 state = trans_id(state, chArr[i]);
+                if (state == 100)                                   ///// if seperator dump previously read char as ID and clear sb (string builder) /////
+                { 
+                    if (sb.ToString() != "")
+                    {
+                        writeToFile("ID", sb.ToString(), lineNum);
+                    }
+                    sb = new System.Text.StringBuilder();
+                    state = 0;
+                }
+                else {
+                    sb.Append(chArr[i]);
+                }
                 i++;
             }
-            if (state == f_state)
+            if (state == f_state)                               ///// if final state dump output ////////
             {
-                temp = new string(chArr);
+                 sb.ToString();
                 return true;
             }
             else {
@@ -109,8 +119,25 @@ namespace JSCompiler
             }
             else if ((ch >= '0' && ch <= '9')){
                 return tt_id[st, 2];
+            }else if(sep.Contains(ch)){    ///// if the inpt char is a seperator /////
+                return 100;
             }
             return 0;
+        }
+
+        void writeToFile(string cp,string vp,int lineNum) {
+            try
+            {
+                System.IO.StreamWriter file = new System.IO.StreamWriter(outPath, true);
+                file.Write("("+cp+"," + vp + "," + lineNum + "),");
+                file.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The file could not be created:");
+                Console.WriteLine(e.Message);
+
+            }
         }
 
     }
