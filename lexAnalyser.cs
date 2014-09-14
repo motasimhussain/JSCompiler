@@ -10,17 +10,18 @@ namespace JSCompiler
     class lexAnalyser
     {
         string[] lines;
-        string outPath,temp;
+        string outPath;
         char[] chArr;
 
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
         int lineNum = 0;
 
-        char[] sep = { ' ', '.', '\t' };
+        char[] sep = { ' ', '.', '\t',',',';' };
+        char[] num_sep = { ' ','\t', ',', ';' };
 
         int[,] tt_id ={{1,1,2},{1,1,1},{2,2,2}} ;
-        int[,] tt_num = { {1 , 3}, {1 , 2}, {2 , 4},{3 , 4},{4 , 4} };
+        int[,] tt_num = { {1,2,3,6}, {6,2,3,6}, {6,2,3,5}, {6,4,6,5}, {6,4,6,5}, {3,4,6,6}, {6,6,6,6} };
 
 
         public lexAnalyser(string[] lines,string outPath) {
@@ -33,14 +34,16 @@ namespace JSCompiler
             while (lineNum < lines.Length){
                 chArr = lines[lineNum].ToCharArray();
                 
-                bool isId = dfa_id(chArr);
+                //bool isId = dfa_id(chArr);
                 bool isNum = dfa_num(chArr);
 
-                if (isId){
-                    writeToFile("ID", temp, lineNum);
-                }else if(isNum){
-                    //writeToFile("NUM", temp, lineNum);      //buggy
-                }
+                //if (isId){
+                //    writeToFile("ID", sb.ToString(), lineNum);
+                //}
+                //else 
+                //if(isNum){
+                //    writeToFile("NUM", sb.ToString(), lineNum);      //buggy
+                //}
 
                 lineNum++;
 
@@ -52,12 +55,31 @@ namespace JSCompiler
         bool dfa_num(char[] chArr)
         {
             int state = 0, i = 0;
+            //sb = new System.Text.StringBuilder();
             while (i < chArr.Length)
             {
-                state = trans_num(state, chArr[i]);
+                if (!num_sep.Contains(chArr[i]))
+                {
+                    state = trans_num(state, chArr[i]);
+                }
+                if (num_sep.Contains(chArr[i]) || (i + 1 == chArr.Length) || (state == 6))                                   ///// if seperator dump previously read char as ID and clear sb (string builder) /////
+                {
+                    if ((sb.ToString() != "") && (state != 2 && state != 4))
+                    {
+                        writeToFile("ERR", sb.ToString(), lineNum);
+                        sb = new System.Text.StringBuilder();
+                       
+                    }
+                    else if ((sb.ToString() != "") && (state == 2 || state == 4))
+                    {
+                        writeToFile("NUM", sb.ToString(), lineNum);
+                        sb = new System.Text.StringBuilder();
+                    }
+                    state = 0;
+                }
                 i++;
             }
-            if ((state == 1) || (state == 2) || (state == 3))
+            if ((state == 3) || (state == 4))
             {
                 //temp = new string(chArr);      //Still buggy
                 return true;
@@ -72,13 +94,28 @@ namespace JSCompiler
         {
             if (ch == '.')
             {
-                return tt_num[st, 1];
+                sb.Append(ch);
+                return tt_num[st, 2];
+            }
+            else if (ch == 'e')
+            {
+                sb.Append(ch);
+                return tt_num[st, 3];
+            }
+            else if ((ch == '+' || ch == '-'))
+            {
+                sb.Append(ch);
+                return tt_num[st, 0];
             }
             else if ((ch >= '0' && ch <= '9'))
             {
-                return tt_num[st, 0];
+                sb.Append(ch);
+                return tt_num[st, 1];
             }
-            return 0;
+            else
+            {
+                return 0;
+            }
         }
 
 
@@ -102,7 +139,7 @@ namespace JSCompiler
             }
             if (state == f_state)                               ///// if final state dump output ////////
             {
-                 sb.ToString();
+                 //sb.ToString();
                 return true;
             }
             else {
