@@ -11,14 +11,14 @@ namespace JSCompiler
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter the path of the file to be read:");
-            string path = Console.ReadLine();
-            Console.WriteLine("Enter the path of the output file to be created:");
-            string outPath = Console.ReadLine();
-            fileReader fr = new fileReader(path);
+            //Console.WriteLine("Enter the path of the file to be read:");
+            //string path = Console.ReadLine();
+            //Console.WriteLine("Enter the path of the output file to be created:");
+            //string outPath = Console.ReadLine();
+            fileReader fr = new fileReader("c:/test.txt");
    
             string[] lineArr = fr.readFile();
-            lexAnalyser la = new lexAnalyser(lineArr,outPath);
+            lexAnalyser la = new lexAnalyser(lineArr,"e:/out.txt");
 
             Console.ReadLine();
         }
