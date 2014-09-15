@@ -23,6 +23,7 @@ namespace JSCompiler
 
         int[,] tt_id ={{1,1,2},{1,1,1},{2,2,2}} ;
         int[,] tt_num = { {1,2,3,6}, {6,2,3,6}, {6,2,3,5}, {6,4,6,5}, {6,4,6,5}, {3,4,6,6}, {6,6,6,6} };
+        int[,] tt_str = { {2,2,2,1,2},{3,3,3,4,5},{2,2,2,2,2},{3,3,3,4,5},{2,2,2,1,2},{3,3,3,3,3} };
 
 
         public lexAnalyser(string[] lines,string outPath) {
@@ -33,19 +34,38 @@ namespace JSCompiler
 
         void checkStr() {
             while (lineNum < lines.Length){
-                chArr = lines[lineNum].ToCharArray();
+                //chArr = lines[lineNum].ToCharArray();
+                string[] s = lines[lineNum].Split(num_sep);
+                int i=0;
+                while (i < s.Length) {
+                    if (id.Contains(s[i]))           //check if the string contains a keyword //
+                    {
+                        writeToFile(s[i], "", lineNum);    // if keyword found write to file //
+                    }
+                    else
+                    {
+
+                        chArr = s[i].ToCharArray();
+                        if (s[i] != "")
+                        {
+                            if (dfa_id(chArr,null))
+                            {
+                                
+                            }
+                            else if (dfa_num(chArr))
+                            {
+                                writeToFile("NUM", s[i], lineNum);
+                            }
+                            else
+                            {
+                                writeToFile("ERR", s[i], lineNum);
+                            }
+                        }
+                    }
+                    i++;
+                }
+               
                 
-                bool isId = dfa_id(chArr);
-                //bool isNum = dfa_num(chArr);
-
-                //if (isId){
-                //    writeToFile("ID", sb.ToString(), lineNum);
-                //}
-                //else 
-                //if(isNum){
-                //    writeToFile("NUM", sb.ToString(), lineNum);      //buggy
-                //}
-
                 lineNum++;
 
             }
@@ -53,34 +73,38 @@ namespace JSCompiler
         }
 
 
+        //bool dfa_str(char[] chArr) {
+
+        //    int state = 0, i = 0;
+
+        //    while (i < chArr.Length) { 
+        //        state = trans_str(state,char[i]);
+        //            i++;
+        //    }
+        
+        //}
+
+        //int trans_str(int st, char ch)
+        //{ 
+        
+        //}
+
         bool dfa_num(char[] chArr)
         {
-            int state = 0, fstate = 0, i = 0;
+            int state = 0, i = 0;
             sb = new System.Text.StringBuilder();
             while (i < chArr.Length)
             {
-                if (!num_sep.Contains(chArr[i])){
+
                     state = trans_num(state, chArr[i]);
-                }
-                if (num_sep.Contains(chArr[i]) || (i + 1 == chArr.Length) || (state == 6))                  ///// if seperator dump previously read char as ID and clear sb (string builder) /////
-                {
-                    if ((sb.ToString() != "") && (state != 2 && state != 4))
+                    if (state > 3 && chArr[i] == '.')
                     {
-                        writeToFile("ERR", sb.ToString(), lineNum);
-                        sb = new System.Text.StringBuilder();
-                        fstate = 0;
+                        writeToFile("DOT", ".", lineNum);
+                        dfa_id(chArr, i + 1);
                     }
-                    else if ((sb.ToString() != "") && (state == 2 || state == 4))
-                    {
-                        writeToFile("NUM", sb.ToString(), lineNum);
-                        sb = new System.Text.StringBuilder();
-                        fstate = 1;
-                    }
-                    state = 0;
-                }
                 i++;
             }
-            if (fstate == 1)
+            if (state == 2 || state == 4)
             {
                 //temp = new string(chArr);      //Still buggy
                 return true;
@@ -95,76 +119,54 @@ namespace JSCompiler
         {
             if (ch == '.')
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_num[st, 2];
             }
             else if (ch == 'e')
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_num[st, 3];
             }
             else if ((ch == '+' || ch == '-'))
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_num[st, 0];
             }
             else if ((ch >= '0' && ch <= '9'))
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_num[st, 1];
             }
             else
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return 0;
             }
         }
 
 
-        bool dfa_id(char[] chArr) {
+        bool dfa_id(char[] chArr,int ? index) {
             int state = 0, i = 0;
+            if (index.HasValue) {
+                i = index.Value;
+            }
+
             sb = new System.Text.StringBuilder();
             while (i < chArr.Length)
             {
-                if (!sep.Contains(chArr[i]))
-                {
-                    state = trans_id(state, chArr[i]);
-                }
-                if (sep.Contains(chArr[i]) || (i + 1 == chArr.Length))                                   ///// if seperator dump previously read char as ID and clear sb (string builder) /////
-                {
-                    if ((sb.ToString() != "") && (state != 1))
-                    {
-
-                        if (!dfa_num(sb.ToString().ToCharArray()))
-                        {
-                            //writeToFile("ERR", sb.ToString(), lineNum);
-                            sb = new System.Text.StringBuilder();
-                        }
-                        else
-                        {
-                            sb = new System.Text.StringBuilder();
-                        }
-
-                    }
-                    else if ((sb.ToString() != "") && (state == 1))
-                    {
-                        if (!id.Contains(sb.ToString()))
-                        {
-                            writeToFile("ID", sb.ToString(), lineNum);
-                            sb = new System.Text.StringBuilder();
-                        }
-                        else
-                        {
-                            writeToFile(sb.ToString(), "", lineNum);
-                            sb = new System.Text.StringBuilder();
-                        }
-                    }
+                
+                state = trans_id(state, chArr[i]);
+                if (state == 3) {
+                    writeToFile("ID", sb.ToString(), lineNum);
+                    writeToFile("DOT", ".", lineNum);
+                    sb = new StringBuilder();
                     state = 0;
                 }
                 i++;
             }
             if (state == 1)
             {
+                writeToFile("ID", sb.ToString(), lineNum);
                 //temp = new string(chArr);      //Still buggy
                 return true;
             }
@@ -188,9 +190,12 @@ namespace JSCompiler
                 sb.Append(ch);
                 return tt_id[st, 2];
             }
-            else
+            else if (ch == '.' && st!=2)
             {
-                return 0;
+                return 3;
+            }
+            else {
+                return 2;
             }
         }
 
