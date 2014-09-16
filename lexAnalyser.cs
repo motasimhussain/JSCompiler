@@ -19,12 +19,13 @@ namespace JSCompiler
 
         char[] sep = { ' ', '.', '\t',',',';' };
         char[] num_sep = { ' ','\t', ',', ';' };
-        string[] id = {"var","break",",while","do","if","for","Number","String"};
+        string[] id = {"var","switch","case","default","function","new","else","array","void","return","in","finally","break",",while","do","if","for","Number","String"};
 
         int[,] tt_id ={{1,1,2},{1,1,1},{2,2,2}} ;
         int[,] tt_num = { {1,2,3,6}, {6,2,3,6}, {6,2,3,5}, {6,4,6,5}, {6,4,6,5}, {3,4,6,6}, {6,6,6,6} };
-        int[,] tt_str = { {2,2,2,1,2},{3,3,3,4,5},{2,2,2,2,2},{3,3,3,4,5},{2,2,2,1,2},{3,3,3,3,3} };
-
+        int[,] tt_str = { {2,1,1,1,1},{1,1,1,1,1},{5,3,4,4,4},{4,4,4,4,4},{5,3,4,4,4},{5,5,5,5,5} };
+        int[,] tt_ass = { {1,2,3},{4,4,3},{4,4,3},{4,4,4},{4,4,4}};
+        int[,] tt_ido = {{1,2},{3,4},{4,3},{4,4},{4,4} };
 
         public lexAnalyser(string[] lines,string outPath) {
             this.lines = lines;
@@ -34,37 +35,11 @@ namespace JSCompiler
 
         void checkStr() {
             while (lineNum < lines.Length){
-                //chArr = lines[lineNum].ToCharArray();
-                string[] s = lines[lineNum].Split(num_sep);
-                int i=0;
-                while (i < s.Length) {
-                    if (id.Contains(s[i]))           //check if the string contains a keyword //
-                    {
-                        writeToFile(s[i], "", lineNum);    // if keyword found write to file //
-                    }
-                    else
-                    {
+                chArr = lines[lineNum].ToCharArray();
 
-                        chArr = s[i].ToCharArray();
-                        if (s[i] != "")
-                        {
-                            if (dfa_id(chArr,null))
-                            {
-                                
-                            }
-                            else if (dfa_num(chArr))
-                            {
-                                writeToFile("NUM", s[i], lineNum);
-                            }
-                            else
-                            {
-                                writeToFile("ERR", s[i], lineNum);
-                            }
-                        }
-                    }
-                    i++;
-                }
-               
+                //bool str = dfa_str(chArr);
+                //bool ass = dfa_ass(chArr);
+                bool ido = dfa_ido(chArr);
                 
                 lineNum++;
 
@@ -72,22 +47,128 @@ namespace JSCompiler
             
         }
 
+        bool dfa_ido(char[] chArr)
+        {
 
-        //bool dfa_str(char[] chArr) {
+            int state = 0, i = 0;
 
-        //    int state = 0, i = 0;
+            while (i < chArr.Length)
+            {
+                state = trans_ido(state, chArr[i]);
+                i++;
+            }
 
-        //    while (i < chArr.Length) { 
-        //        state = trans_str(state,char[i]);
-        //            i++;
-        //    }
-        
-        //}
+            if (state == 3)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
-        //int trans_str(int st, char ch)
-        //{ 
-        
-        //}
+        int trans_ido(int st, char ch)
+        {
+            if (ch == '+')
+            {
+                return tt_ido[st, 0];
+            }
+            else if (ch == '-')
+            {
+                return tt_ido[st, 1];
+            }
+            else
+            {
+                return 4;
+            }
+
+        }
+
+        bool dfa_ass(char[] chArr)
+        {
+
+            int state = 0, i = 0;
+
+            while (i < chArr.Length)
+            {
+                state = trans_ass(state, chArr[i]);
+                i++;
+            }
+
+            if (state == 3)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        int trans_ass(int st, char ch)
+        {
+            if (ch == '+')
+            {
+                return tt_ass[st, 0];
+            }
+            else if (ch == '-')
+            {
+                return tt_ass[st, 1];
+            }
+            else if (ch == '=')
+            {
+                return tt_ass[st, 2];
+            }
+            else
+            {
+                return 4;
+            }
+
+        }
+
+        bool dfa_str(char[] chArr) {
+
+            int state = 0, i = 0;
+
+            while (i < chArr.Length) { 
+                state = trans_str(state,chArr[i]);
+                    i++;
+            }
+
+            if (state == 5)
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        int trans_str(int st, char ch)
+        {
+            if (ch == '"') {
+                return tt_str[st, 0];
+            }else if(ch == '\\'){
+                return tt_str[st, 1];
+            }
+            else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
+            {
+                return tt_str[st, 2];
+            }
+            else if ((ch >= '0' && ch <= '9'))
+            {
+                return tt_str[st, 3];
+            }
+            else if (ch >= ' ' && ch <= '~' && ch != '\\')
+            {
+                return tt_str[st, 4];
+            }
+            else {
+                return 2;
+            }
+
+        }
 
         bool dfa_num(char[] chArr)
         {
@@ -95,18 +176,10 @@ namespace JSCompiler
             sb = new System.Text.StringBuilder();
             while (i < chArr.Length)
             {
-
-                    state = trans_num(state, chArr[i]);
-                    if (state > 3 && chArr[i] == '.')
-                    {
-                        writeToFile("DOT", ".", lineNum);
-                        dfa_id(chArr, i + 1);
-                    }
-                i++;
+                state = trans_num(state, chArr[i]);
             }
             if (state == 2 || state == 4)
             {
-                //temp = new string(chArr);      //Still buggy
                 return true;
             }
             else
@@ -140,34 +213,22 @@ namespace JSCompiler
             else
             {
                 //sb.Append(ch);
-                return 0;
+                return 6;
             }
         }
 
 
-        bool dfa_id(char[] chArr,int ? index) {
+        bool dfa_id(char[] chArr) {
             int state = 0, i = 0;
-            if (index.HasValue) {
-                i = index.Value;
-            }
 
             sb = new System.Text.StringBuilder();
             while (i < chArr.Length)
             {
-                
                 state = trans_id(state, chArr[i]);
-                if (state == 3) {
-                    writeToFile("ID", sb.ToString(), lineNum);
-                    writeToFile("DOT", ".", lineNum);
-                    sb = new StringBuilder();
-                    state = 0;
-                }
                 i++;
             }
             if (state == 1)
             {
-                writeToFile("ID", sb.ToString(), lineNum);
-                //temp = new string(chArr);      //Still buggy
                 return true;
             }
             else
@@ -178,23 +239,20 @@ namespace JSCompiler
 
         int trans_id(int st,char ch) {
             if (ch == '_') {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_id[st,0];
             }
             else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_id[st, 1];
             }
             else if ((ch >= '0' && ch <= '9'))
             {
-                sb.Append(ch);
+                //sb.Append(ch);
                 return tt_id[st, 2];
             }
-            else if (ch == '.' && st!=2)
+            else
             {
-                return 3;
-            }
-            else {
                 return 2;
             }
         }
