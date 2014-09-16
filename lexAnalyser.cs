@@ -14,11 +14,13 @@ namespace JSCompiler
         char[] chArr;
 
         System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        List<string> splStr = new List<string>();
 
         int lineNum = 0;
 
         char[] sep = { ' ', '.', '\t',',',';' };
         char[] num_sep = { ' ','\t', ',', ';' };
+        char[] dotOP = { '+', '-', '*', '/', '=',' ' };
         string[] id = {"var","break",",while","do","if","for","Number","String"};
 
         int[,] tt_id ={{1,1,2},{1,1,1},{2,2,2}} ;
@@ -29,7 +31,61 @@ namespace JSCompiler
         public lexAnalyser(string[] lines,string outPath) {
             this.lines = lines;
             this.outPath = outPath;
-            this.checkStr();
+            //this.checkStr();
+            this.splitter(lines);
+        }
+
+        void splitter(string[] li) {
+            splStr = new List<string>();
+            int i = 0,k=0;
+            while (i < li.Length) {
+                int j=0, dot = 0, inCom = 0,bSlash = 0;
+                char[] ch = li[i].ToCharArray();
+                while(j < ch.Length){
+                    if (ch[j] == '"') {
+                        inCom ++;
+                        sb.Append(ch[j]);
+                    }
+                    else if (inCom == 1) {
+                        if (ch[j] != '\\') {
+                            sb.Append(ch[j]);
+                        }
+                        else if (ch[j] == '\\') {
+                            if (j + 1 < ch.Length) {
+                                if (ch[j + 1] == '"') {
+                                    inCom--;
+                                }
+                            }
+                            bSlash++;
+                            sb.Append(ch[j]);
+                        }
+                    }
+                    else if (inCom == 2)
+                    {
+                        splStr.Add(sb.ToString());
+                        sb = new StringBuilder();
+                        inCom = 0;
+                    }
+                    else if (ch[j] == '.') {
+                        if (j + 1 < ch.Length && j!=0) {
+                            if (char.IsNumber(ch[j + 1]) && (char.IsNumber(ch[j - 1]) || dotOP.Contains(ch[j - 1])))
+                            {
+                                sb.Append(ch[j]);
+                            }
+                        }
+                    }
+                    else if (num_sep.Contains(ch[j])&& sb.ToString() != "")
+                    {
+                        splStr.Add(sb.ToString());
+                        sb = new StringBuilder();
+                    }
+                    else {
+                        sb.Append(ch[j]);
+                    }
+                    j++;
+                }
+                i++;
+            }
         }
 
         void checkStr() {
