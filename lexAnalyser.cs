@@ -50,17 +50,14 @@ namespace JSCompiler
                 sb.Clear();
                 int DOT = 0;
                 int ddotflag = 0;
-                int i = 0, k = 0, f = 0, separatorflag = 0, opFlag = 0, incomm = 0; // MAKE ALL = 0 Bewoqoofi nahi dikhana koi
+                int i = 0, separatorflag = 0, opFlag = 0, incomm = 0; // MAKE ALL = 0 Bewoqoofi nahi dikhana koi
                 while (j < chArr.Length)
                 {
-                    k = 0;
-                    f = 0;
-                    while (k < sep.Length)
-                    {
+
                         if (j < chArr.Length)
                         {
 
-                            if (chArr[j] == sep[k])
+                            if (sep.Contains(chArr[j]))
                             {
                                 separatorflag = 1;
                                 if (chArr[j] == '.')
@@ -136,7 +133,6 @@ namespace JSCompiler
                                         else if (chArr[j] == '"' || j >= chArr.Length)
                                         {
                                             incomm = 0;
-                                            k = 0;
                                             j++;
                                             string str = sb.ToString();
                                             writeToFile("STR", str, lineNum);
@@ -162,14 +158,10 @@ namespace JSCompiler
                                 }
                             }
                         }
-                        k++;
-                    }
 
-                    while (f < op.Length)
-                    {
                         if (j < chArr.Length)
                         {
-                            if (chArr[j] == op[f])
+                            if (op.Contains(chArr[j]))
                             {
                                 opFlag = 1;
 
@@ -389,8 +381,7 @@ namespace JSCompiler
 
                             }
                         }
-                        f++;
-                    }
+
                     if (separatorflag == 0 && opFlag == 0)
                     {
                         sb.Append(chArr[j]);
