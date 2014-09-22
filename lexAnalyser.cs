@@ -751,7 +751,7 @@ namespace JSCompiler
             try
             {
                 System.IO.StreamWriter file = new System.IO.StreamWriter(outPath, true);
-                file.Write("(" + cp + "," + vp + "," + lineNum + "),\t");
+                file.WriteLine("(" + cp + "," + vp + "," + lineNum + ")");
                 file.Close();
             }
             catch (Exception e)
