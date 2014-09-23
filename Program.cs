@@ -15,10 +15,11 @@ namespace JSCompiler
         {
             string path = "c:/test.txt";
             string outPath = "e:/out.txt";
-            //Console.WriteLine("Enter the path of the file to be read:");
-            //string path = Console.ReadLine();
-            //Console.WriteLine("Enter the path of the output file to be created:");
-            //string outPath = Console.ReadLine();
+
+            Console.WriteLine("Enter the path of the file to be read:");
+            path = Console.ReadLine();
+            Console.WriteLine("Enter the path of the output file to be created:");
+            outPath = Console.ReadLine();
             try
             {
                 if (File.Exists(outPath))
