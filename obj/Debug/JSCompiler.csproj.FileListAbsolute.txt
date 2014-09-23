@@ -3,3 +3,4 @@ c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\bin
 c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\bin\Debug\JSCompiler.pdb
 c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.exe
 c:\users\motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.pdb
+C:\Users\Motasim\documents\visual studio 2012\Projects\JSCompiler\JSCompiler\obj\Debug\JSCompiler.csprojResolveAssemblyReference.cache

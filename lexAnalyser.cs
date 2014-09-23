@@ -31,7 +31,7 @@ namespace JSCompiler
         int[,] tt_ass = { { 1, 2 }, { 3, 2 }, { 3, 3 }, { 3, 3 } };
         int[,] tt_ido = { { 1, 3 }, { 2, 4 }, { 4, 4 }, { 4, 2 }, { 4, 4 } };
         int[,] tt_lop = { { 3, 4, 4 }, { 4, 3, 4 }, { 4, 4, 4 }, { 4, 4, 4 } };
-        int[,] tt_cmp = { { 1, 1 }, { 3, 2 }, { 3, 3 }, { 3, 3 } };
+        int[,] tt_cmp = { { 1, 2, 2 }, { 4, 4, 3 }, { 4, 4, 3 }, { 4, 4, 4 }, { 4, 4, 4 } };
 
         public lexAnalyser(string[] lines, string outPath)
         {
@@ -496,7 +496,7 @@ namespace JSCompiler
                 i++;
             }
 
-            if (state == 2)
+            if (state == 1 || state == 3)
             {
                 return true;
             }
@@ -508,17 +508,20 @@ namespace JSCompiler
 
         int trans_cmp(int st, char ch)
         {
-            if (ch == '>' || ch == '<' || ch == '!')
+            if (ch == '>' || ch == '<')
             {
                 return tt_cmp[st, 0];
             }
+            else if (ch == '!') {
+                return tt_cmp[st, 1];
+            }
             else if (ch == '=')
             {
-                return tt_cmp[st, 1];
+                return tt_cmp[st, 2];
             }
             else
             {
-                return 3;
+                return 4;
             }
 
         }
