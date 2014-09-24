@@ -45,7 +45,7 @@ namespace JSCompiler
         {
             while (lineNum < lines.Length)
             {
-                lines[lineNum] = lines[lineNum] + "   ";
+                //lines[lineNum] = lines[lineNum] + "   ";
                 chArr = lines[lineNum].ToCharArray();
                 sb.Clear();
                 int DOT = 0;
@@ -124,23 +124,30 @@ namespace JSCompiler
                                     incomm = 1;
                                     while (incomm == 1)
                                     {
-                                        j++;
-                                        if (chArr[j] == '\\')
+                                        if (j + 1 < chArr.Length)
                                         {
                                             j++;
-                                            sb.Append(chArr[j]);
+                                            if (chArr[j] == '\\')
+                                            {
+                                                j++;
+                                                sb.Append(chArr[j]);
+                                            }
+                                            else if (chArr[j] == '"' || j >= chArr.Length)
+                                            {
+                                                incomm = 0;
+                                                //j++;
+                                                string str = sb.ToString();
+                                                writeToFile("STR", str, lineNum);
+                                                sb = new StringBuilder();
+                                            }
+                                            else
+                                            {
+                                                sb.Append(chArr[j]);
+                                            }
                                         }
-                                        else if (chArr[j] == '"' || j >= chArr.Length)
-                                        {
+                                        else {
                                             incomm = 0;
-                                            j++;
-                                            string str = sb.ToString();
-                                            writeToFile("STR", str, lineNum);
-                                            sb = new StringBuilder();
-                                        }
-                                        else
-                                        {
-                                            sb.Append(chArr[j]);
+                                            break;
                                         }
                                     }
 
