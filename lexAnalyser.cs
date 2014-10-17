@@ -59,6 +59,8 @@ namespace JSCompiler
 
                             if (sep.Contains(chArr[j]))
                             {
+                                isRecognized(sb.ToString());
+                                sb.Clear();
                                 separatorflag = 1;
                                 if (chArr[j] == '.')
                                 {
@@ -127,7 +129,7 @@ namespace JSCompiler
                                         if (j + 1 < chArr.Length)
                                         {
                                             j++;
-                                            if (chArr[j] == '\\')
+                                            if (chArr[j] == '\\' && (j + 1 < chArr.Length))
                                             {
                                                 j++;
                                                 sb.Append(chArr[j]);
@@ -146,6 +148,8 @@ namespace JSCompiler
                                             }
                                         }
                                         else {
+                                            writeToFile("ERR", sb.ToString(), lineNum);
+                                            sb.Clear();
                                             incomm = 0;
                                             break;
                                         }
