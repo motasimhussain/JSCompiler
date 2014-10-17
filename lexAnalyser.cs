@@ -771,18 +771,40 @@ namespace JSCompiler
             int fl = 0;
             while (fl != 1)
             {
-                if (chArr[j] == '*' && chArr[j + 1] == '/')
+                if (chArr.Length > 0)
                 {
-                    fl = 1;
+                    if (chArr[j] == '*' && chArr[j + 1] == '/')
+                    {
+                        fl = 1;
+                    }
+                    else
+                    {
+                        j++;
+                        if (j >= chArr.Length)
+                        {
+                            if (lineNum + 1 < lines.Length)
+                            {
+                                lineNum++;
+                                chArr = lines[lineNum].ToCharArray();
+                                j = 0;
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    j++;
-                    if (j >= chArr.Length)
+                    if (lineNum + 1 < lines.Length)
                     {
                         lineNum++;
                         chArr = lines[lineNum].ToCharArray();
                         j = 0;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
