@@ -37,7 +37,7 @@ namespace JSCompiler
 
                 TokenReader tr = new TokenReader(outPath);
 
-                SynAnalize sa = new SynAnalize(tr.readFile());
+                SynAnalyze sa = new SynAnalyze(tr.readFile());
 
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;

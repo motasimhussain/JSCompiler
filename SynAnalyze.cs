@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace JSCompiler
 {
-    class SynAnalize
+    class SynAnalyze
     {
         Token[] tkn;
-        public SynAnalize(Token[] tkn) {
+        public SynAnalyze(Token[] tkn) {
             this.tkn = tkn;
-            analize();
+            analyze();
         }
 
-        public void analize() {
+        public void analyze() {
             
         }
 
