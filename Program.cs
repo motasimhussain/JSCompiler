@@ -35,6 +35,10 @@ namespace JSCompiler
 
                 lexAnalyser la = new lexAnalyser(lineArr, outPath);
 
+                TokenReader tr = new TokenReader(outPath);
+
+                SynAnalize sa = new SynAnalize(tr.readFile());
+
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
 

@@ -45,7 +45,6 @@ namespace JSCompiler
         {
             while (lineNum < lines.Length)
             {
-                //lines[lineNum] = lines[lineNum] + "   ";
                 chArr = lines[lineNum].ToCharArray();
                 sb.Clear();
                 int DOT = 0;
@@ -160,7 +159,7 @@ namespace JSCompiler
                                 {
                                     isRecognized(sb.ToString());
                                     sb.Clear();
-                                    writeToFile(chArr[j].ToString(), "'" + chArr[j].ToString() + "'", lineNum);
+                                    writeToFile(chArr[j].ToString(),chArr[j].ToString(), lineNum);
                                 }
                                 else
                                 {
@@ -407,12 +406,6 @@ namespace JSCompiler
                 isRecognized(sb.ToString());
                 sb.Clear();
             }
-
-            //bool str = dfa_str(chArr);
-            //bool ass = dfa_ass(chArr);
-            //bool ido = dfa_ido(chArr);
-            //bool isID = dfa_id(chArr);
-            //bool isNum = dfa_num(chArr);
         }
 
 
@@ -682,27 +675,22 @@ namespace JSCompiler
         {
             if (ch == '.')
             {
-                //sb.Append(ch);
                 return tt_num[st, 2];
             }
             else if (ch == 'e')
             {
-                //sb.Append(ch);
                 return tt_num[st, 3];
             }
             else if ((ch == '+' || ch == '-'))
             {
-                //sb.Append(ch);
                 return tt_num[st, 0];
             }
             else if ((ch >= '0' && ch <= '9'))
             {
-                //sb.Append(ch);
                 return tt_num[st, 1];
             }
             else
             {
-                //sb.Append(ch);
                 return 6;
             }
         }
@@ -732,17 +720,14 @@ namespace JSCompiler
         {
             if (ch == '_')
             {
-                //sb.Append(ch);
                 return tt_id[st, 0];
             }
             else if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
             {
-                //sb.Append(ch);
                 return tt_id[st, 1];
             }
             else if ((ch >= '0' && ch <= '9'))
             {
-                //sb.Append(ch);
                 return tt_id[st, 2];
             }
             else
@@ -756,7 +741,7 @@ namespace JSCompiler
             try
             {
                 System.IO.StreamWriter file = new System.IO.StreamWriter(outPath, true);
-                file.WriteLine("(" + cp + "," + vp + "," + lineNum + ")");
+                file.WriteLine(cp + "`" + vp + "`" + lineNum);
                 file.Close();
             }
             catch (Exception e)

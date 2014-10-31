@@ -45,6 +45,9 @@
     <Compile Include="lexAnalyser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynAnalize.cs" />
+    <Compile Include="Token.cs" />
+    <Compile Include="TokenReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
