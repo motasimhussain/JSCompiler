@@ -23,14 +23,14 @@ namespace JSCompiler
         char[] sep = { ' ', '.', '\t', ',', ';', '"', '}', '{', '(', ')', '[', ']' };
         char[] op = { '+', '-', '*', '/', '=', '%', '&', '|', '!', '>', '<' };
         char[] num_sep = { ' ', '\t', ',', ';' };
-        string[] id = { "var", "switch", "case", "default", "function", "new", "else", "array", "void", "return", "in", "finally", "break", ",while", "do", "if", "for", "Number", "String" };
+        string[] id = { "var", "switch", "case", "default", "function", "new", "else", "array", "void", "return", "in", "finally", "break", "while", "do", "if", "for", "Number", "String" };
         int[,] tt_op = { { 1 }, { 2 }, { 2 } };
         int[,] tt_id = { { 1, 1, 2 }, { 1, 1, 1 }, { 2, 2, 2 } };
         int[,] tt_num = { { 1, 2, 3, 6 }, { 6, 2, 3, 6 }, { 6, 2, 3, 5 }, { 6, 4, 6, 5 }, { 6, 4, 6, 5 }, { 3, 4, 6, 6 }, { 6, 6, 6, 6 } };
         int[,] tt_str = { { 2, 1, 1, 1, 1 }, { 1, 1, 1, 1, 1 }, { 5, 3, 4, 4, 4 }, { 4, 4, 4, 4, 4 }, { 5, 3, 4, 4, 4 }, { 5, 5, 5, 5, 5 } };
         int[,] tt_ass = { { 1, 2 }, { 3, 2 }, { 3, 3 }, { 3, 3 } };
         int[,] tt_ido = { { 1, 3 }, { 2, 4 }, { 4, 4 }, { 4, 2 }, { 4, 4 } };
-        int[,] tt_lop = { { 3, 4, 4 }, { 4, 3, 4 }, { 4, 4, 4 }, { 4, 4, 4 } };
+        int[,] tt_lop = { { 1,2,3}, {3, 4,4 }, { 4, 3, 4 }, { 4, 4, 4 },{4,4,4} };
         int[,] tt_cmp = { { 1, 2, 2 }, { 4, 4, 3 }, { 4, 4, 3 }, { 4, 4, 4 }, { 4, 4, 4 } };
 
         public lexAnalyser(string[] lines, string outPath)
@@ -839,7 +839,7 @@ namespace JSCompiler
                 }
                 else if (isRec[5])
                 {
-                    writeToFile("LOG_ OP", str, lineNum);
+                    writeToFile("LOG_OP", str, lineNum);
 
                 }
                 else if (isRec[6])

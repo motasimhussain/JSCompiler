@@ -16,11 +16,331 @@ namespace JSCompiler
         }
 
         public void analyze() {
-            dec_st();
+            while (pos+1 < tkn.Length)
+            {
+                stmnt();
+                pos++;
+            }
         }
 
+
+        public void stmnt() {
+            switch (tkn[pos].CP)
+            {
+                case "var":
+                    dec_st();
+                    break;
+                case "while":
+                    while_st();
+                    break;
+                case "do":
+                    do_while();
+                    break;
+                case "if":
+                    if_else();
+                    break;
+                case "function":
+                    fn_def();
+                    break;
+                case "for":
+                    break;
+            }
+        }
+
+        /* =============================== ID START ============================ */
+        /* =============================== ID START ============================ */
+
+        /* =============================== IF ELSE START ============================ */
+        public void if_else() {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "(")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP != ")")
+                            {
+                                oe();
+
+                                if (tkn[pos].CP == ")")
+                                {
+                                    if (pos + 1 < tkn.Length)
+                                    {
+                                        pos++;
+                                        if (tkn[pos].CP == "{")
+                                        {
+                                            if (pos + 1 < tkn.Length)
+                                            {
+                                                pos++;
+                                                if (tkn[pos].CP == "}")
+                                                {
+                                                    if (pos + 1 < tkn.Length)
+                                                    {
+                                                        pos++;
+                                                        if (tkn[pos].CP == "else")
+                                                        {
+                                                            else_if();
+                                                            o_else();
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                                    {
+                                                        body();
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                Console.WriteLine("Unexpected ) at line: " + tkn[pos].LN);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public void o_else() {
+            if (pos < tkn.Length && tkn[pos].CP == "else")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    body();
+                }
+            }
+        }
+
+        public void else_if() {
+            if (pos < tkn.Length && tkn[pos].CP == "else")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "if") {
+                        if_else();
+                    }
+                }
+            }
+        }
+        /* =============================== IF ELSE END =============================== */
+
+
+        /* =============================== DO WHILE START ============================ */
+        public void do_while() {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "{")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP == "}")
+                            {
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    pos++;
+                                }
+                            }
+                            else
+                            {
+                                while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                {
+                                    body();
+                                }
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    pos++;
+                                    if (tkn[pos].CP == "while") {
+                                        if (pos + 1 < tkn.Length)
+                                        {
+                                            pos++;
+                                            oe();
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* =============================== DO WHILE END ============================== */
+
+
+        /* =============================== FUNCTION START ============================ */
+        public void fn_def() {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "ID") {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP == "(")
+                            {
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    pos++;
+                                    param();
+                                    if (tkn[pos].CP == ")")
+                                    {
+                                        if (pos + 1 < tkn.Length)
+                                        {
+                                            pos++;
+                                            if (tkn[pos].CP == "{")
+                                            {
+                                                if (pos + 1 < tkn.Length)
+                                                {
+                                                    pos++;
+                                                    if (tkn[pos].CP == "}")
+                                                    {
+                                                        if (pos + 1 < tkn.Length)
+                                                        {
+                                                            pos++;
+
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                                        {
+                                                            body();
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void param() { 
+            if(tkn[pos].CP == "ID" ){
+                if (pos + 1 < tkn.Length) {
+                    pos++;
+                    if (tkn[pos].CP == ",")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            param();
+                        }
+                    }
+                    else if (tkn[pos].CP == "ID")
+                    {
+                        Console.WriteLine("Invalid Parameter Declaration at Line: " + tkn[pos].LN);
+                    }
+                }
+            }
+            else if (!(tkn[pos].CP == ")") || !(tkn[pos].CP == "{"))
+            {
+                Console.WriteLine("Invalid Parameter Declaration at Line: " + tkn[pos].LN);
+            }
+        }
+        /* =============================== FUNCTION END ============================== */
+
+
+        /* =============================== WHILE STATEMENT START ============================ */
+
+        public void while_st() {
+            if (pos < tkn.Length)
+            {
+                if (tkn[pos].CP == "while")
+                {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        if (tkn[pos].CP == "(") {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                oe();
+                                if (tkn[pos].CP == ")") {
+                                    if (pos + 1 < tkn.Length)
+                                    {
+                                        pos++;
+                                        if (tkn[pos].CP == "{")
+                                        {
+                                            if (pos + 1 < tkn.Length)
+                                            {
+                                                pos++;
+                                                if (tkn[pos].CP == "}")
+                                                {
+                                                    if (pos + 1 < tkn.Length)
+                                                    {
+                                                        pos++;
+
+                                                    }
+                                                }
+                                                else {
+                                                    while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                                    {
+                                                        body();
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                Console.WriteLine("Unexpected End of file at line: "+tkn[pos].LN);
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void body() {
+            if (pos < tkn.Length) {
+                stmnt();
+                oe();
+            }
+        }
+
+        /* =============================== WHILE STATEMENT START ============================ */
+        /* ====================DECLARATION STATEMENT ANALYZER START======================== */
+
         public void dec_st() {
-            while (pos < tkn.Length){
+            if(pos < tkn.Length){
                 if (tkn[pos].CP == "var")
                 {
                     if (pos + 1 < tkn.Length)
@@ -35,14 +355,19 @@ namespace JSCompiler
                                 list();
                             }
                         }
+                        else {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                Console.WriteLine("Invalid idientifier on line: " + tkn[pos].LN);
+                            }
+                        }
                     }
                 }
                 else {
                     /* Error goes here*/
                     Console.WriteLine("Incorrect statement or missing a terminator at line: "+tkn[pos].LN);
-                    break;
                 }
-                pos++;
             }
         }
 
@@ -114,6 +439,172 @@ namespace JSCompiler
                 }
             }
         }
+
+        /* ====================DECLARATION STATEMENT ANALYZER END======================== */
+
+        /* ==============================EXPRESSION START=================================*/
+
+        public void oe() { ae(); oe_(); }
+        public void oe_() {
+            if (tkn[pos].VP == "||")
+            {
+                if(pos + 1 < tkn.Length){
+                    pos++;
+                    ae();
+                    oe_();
+                }
+                
+            }
+            else {return;}
+        }
+        public void ae() { re(); ae_(); }
+        public void ae_() {
+            if (tkn[pos].VP == "&&")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    re();
+                    ae_();
+                }
+            }
+            else {return;}
+        }
+        public void re() {e(); re_();}
+        public void re_() {
+            if (tkn[pos].CP == "CMP_OP")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    e();
+                    re_();
+                }
+            }
+            else { return; }
+        }
+        public void e() { t(); e_(); }
+        public void e_() {
+            if (tkn[pos].VP == "+" || tkn[pos].VP == "-")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    t();
+                    e_();
+                }
+            }
+            else { return; }
+        }
+        public void t() { f(); t_(); }
+        public void t_() {
+            if (tkn[pos].VP == "*" || tkn[pos].VP == "/" || tkn[pos].VP == "%")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    f();
+                    t_();
+                }
+            }
+            else { return; }
+        }
+        public void f() {
+            if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
+            {
+                if (tkn[pos].CP == "ID") {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        f_();
+                    }
+                }
+                return;
+            }
+            else if (tkn[pos].VP == "!")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    f();
+                }
+            }
+            else
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    oe();
+                }
+                return;
+            }
+        }
+        public void f_() {
+            if (tkn[pos].CP == "(") {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == ")")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP == ";")
+                            {
+                                return;
+                            }
+                            else {
+                                Console.WriteLine("Err: Missing Terminator At Line: "+tkn[pos].LN);
+                            }   
+                        }
+                    }
+                    else{
+                        p_l();
+                    }
+                }
+            }
+        }
+
+        public void p_l() {
+            if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM" || tkn[pos].CP == ",")
+            {
+                if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
+                {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        if (tkn[pos].CP == ",")
+                        {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                p_l();
+                            }
+                        }
+                        else if (tkn[pos].CP == ")")
+                        {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                if (tkn[pos].CP == ";")
+                                {
+                                    return;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Err: Missing Terminator at line: "+tkn[pos].LN);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                Console.WriteLine("ERR: Invalid Argument At Line: "+tkn[pos].LN);
+            }
+                            
+        }
+        /* ================================EXPRESSION END=================================*/
 
     }
 }
