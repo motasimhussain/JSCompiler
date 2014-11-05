@@ -43,12 +43,121 @@ namespace JSCompiler
                     fn_def();
                     break;
                 case "for":
+                    for_stmnt();
+                    break;
+                case "ID":
+                    assign();
+                    break;
+                case "switch":
+                    switch_case();
                     break;
             }
         }
 
-        /* =============================== ID START ============================ */
-        /* =============================== ID START ============================ */
+        /* =============================== SWITCH START ============================ */
+        public void switch_case()
+        {
+
+        }
+        /* =============================== SWITCH END ============================== */
+
+        /* =============================== ASSIGNMENT START ============================ */
+        public void assign()
+        {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "AS_OP") {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            e();
+                        }
+                    }
+                }
+            }
+        }
+        /* =============================== ASSIGNMENT END ============================== */
+
+
+        /* =============================== FOR START ============================ */
+        public void for_stmnt() {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "(")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            dec_st();
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                if (tkn[pos].CP == ";")
+                                {
+                                    oe();
+                                    if (pos + 1 < tkn.Length)
+                                    {
+                                        pos++;
+                                        if (tkn[pos].CP == ";")
+                                        {
+                                            if (pos + 1 < tkn.Length)
+                                            {
+                                                pos++;
+                                                re();
+                                                if (pos + 1 < tkn.Length)
+                                                {
+                                                    pos++;
+                                                    if (tkn[pos].CP == ")")
+                                                    {
+                                                        if (pos + 1 < tkn.Length)
+                                                        {
+                                                            pos++;
+                                                            if (tkn[pos].CP == "{")
+                                                            {
+                                                                if (pos + 1 < tkn.Length)
+                                                                {
+                                                                    pos++;
+                                                                    if (tkn[pos].CP == "}")
+                                                                    {
+                                                                        if (pos + 1 < tkn.Length)
+                                                                        {
+                                                                            pos++;
+
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                                                        {
+                                                                            body();
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        /* =============================== FOR END ============================== */
 
         /* =============================== IF ELSE START ============================ */
         public void if_else() {
@@ -555,8 +664,12 @@ namespace JSCompiler
                             }
                             else {
                                 Console.WriteLine("Err: Missing Terminator At Line: "+tkn[pos].LN);
-                            }   
+                            }
                         }
+                        else
+                        {
+                            Console.WriteLine("Err: Unexpected End Of file At Line: " + tkn[pos].LN);
+                        }   
                     }
                     else{
                         p_l();
