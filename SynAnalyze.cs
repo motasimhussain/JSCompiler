@@ -95,10 +95,8 @@ namespace JSCompiler
                         {
                             pos++;
                             dec_st();
-                            if (pos + 1 < tkn.Length)
-                            {
-                                pos++;
-                                if (tkn[pos].CP == ";")
+
+                                if (tkn[pos].CP == "ID")
                                 {
                                     oe();
                                     if (pos + 1 < tkn.Length)
@@ -151,7 +149,6 @@ namespace JSCompiler
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 }
@@ -523,7 +520,7 @@ namespace JSCompiler
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
-                        analyze();
+                        return;
                     }
                 }
                 else if (tkn[pos].CP == ",")
@@ -642,7 +639,7 @@ namespace JSCompiler
             {
                 if (pos + 1 < tkn.Length)
                 {
-                    pos++;
+                    pos++;                       /* Problem Here if i dont increment it goes into infinite loop*/
                     oe();
                 }
                 return;
