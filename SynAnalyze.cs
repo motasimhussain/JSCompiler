@@ -57,7 +57,111 @@ namespace JSCompiler
         /* =============================== SWITCH START ============================ */
         public void switch_case()
         {
+            if (pos < tkn.Length)
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "(")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP != ")")
+                            {
+                                e();
 
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    if (tkn[pos].CP == ")")
+                                    {
+                                        if (pos + 1 < tkn.Length)
+                                        {
+                                            pos++;
+                                            if (tkn[pos].CP == "{")
+                                            {
+                                                if (pos + 1 < tkn.Length)
+                                                {
+                                                    pos++;
+                                                    if (tkn[pos].CP != "}")
+                                                    {
+                                                        s_body();
+                                                    }
+                                                    else {
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                            }else{
+                                Console.WriteLine("Err at line: " + tkn[pos].LN);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void s_body() {
+            if (tkn[pos].CP == "case")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    init2();
+                    if (tkn[pos].CP == ":")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            code();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
+                    }
+                }
+                else {
+                    Console.WriteLine("Err at line: " + tkn[pos].LN);
+                }
+            }
+            if (tkn[pos].CP == "default")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == ":")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            code();
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Err at line: " + tkn[pos].LN);
+                }
+            }
+        }
+
+        public void code() {
+            while (tkn[pos].CP != "}") {
+                if (pos + 1 < tkn.Length)
+                {
+                    stmnt();
+                }
+            }
         }
         /* =============================== SWITCH END ============================== */
 
@@ -577,6 +681,9 @@ namespace JSCompiler
                         pos++;
                         return;
                     }
+                }
+                else {
+                    Console.WriteLine("Err at line: " + tkn[pos].LN);
                 }
             }
         }

@@ -20,7 +20,7 @@ namespace JSCompiler
         int lineNum = 0;
         int j = 0;
 
-        char[] sep = { ' ', '.', '\t', ',', ';', '"', '}', '{', '(', ')', '[', ']' };
+        char[] sep = { ' ', '.', '\t', ',', ';' ,':', '"', '}', '{', '(', ')', '[', ']' };
         char[] op = { '+', '-', '*', '/', '=', '%', '&', '|', '!', '>', '<' };
         char[] num_sep = { ' ', '\t', ',', ';' };
         string[] id = { "var", "switch", "case", "default", "function", "new", "else", "array", "void", "return", "in", "finally", "break", "while", "do", "if", "for", "Number", "String" };
@@ -155,7 +155,7 @@ namespace JSCompiler
                                     }
 
                                 }
-                                else if (chArr[j] == ',' || chArr[j] == ';' || chArr[j] == '(' || chArr[j] == ')' || chArr[j] == '[' || chArr[j] == ']' || chArr[j] == '{' || chArr[j] == '}')
+                                else if (chArr[j] == ',' || chArr[j] == ';' || chArr[j] == '(' || chArr[j] == ')' || chArr[j] == '[' || chArr[j] == ']' || chArr[j] == '{' || chArr[j] == '}' || chArr[j] == ':')
                                 {
                                     isRecognized(sb.ToString());
                                     sb.Clear();
