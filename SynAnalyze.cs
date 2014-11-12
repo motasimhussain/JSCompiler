@@ -76,6 +76,13 @@ namespace JSCompiler
                             e();
                         }
                     }
+                    else if (tkn[pos].CP == "(")
+                    {
+                        e();
+                    }
+                    else {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
+                    }
                 }
             }
         }
@@ -96,60 +103,77 @@ namespace JSCompiler
                             pos++;
                             dec_st();
 
-                                if (tkn[pos].CP == "ID")
+                            if (tkn[pos].CP == "ID")
+                            {
+                                oe();
+                                if (pos + 1 < tkn.Length)
                                 {
-                                    oe();
-                                    if (pos + 1 < tkn.Length)
+                                    pos++;
+                                    if (tkn[pos].CP == ";")
                                     {
-                                        pos++;
-                                        if (tkn[pos].CP == ";")
+                                        if (pos + 1 < tkn.Length)
                                         {
+                                            pos++;
+                                            re();
                                             if (pos + 1 < tkn.Length)
                                             {
                                                 pos++;
-                                                re();
-                                                if (pos + 1 < tkn.Length)
+                                                if (tkn[pos].CP == ")")
                                                 {
-                                                    pos++;
-                                                    if (tkn[pos].CP == ")")
+                                                    if (pos + 1 < tkn.Length)
                                                     {
-                                                        if (pos + 1 < tkn.Length)
+                                                        pos++;
+                                                        if (tkn[pos].CP == "{")
                                                         {
-                                                            pos++;
-                                                            if (tkn[pos].CP == "{")
+                                                            if (pos + 1 < tkn.Length)
                                                             {
-                                                                if (pos + 1 < tkn.Length)
+                                                                pos++;
+                                                                if (tkn[pos].CP == "}")
                                                                 {
-                                                                    pos++;
-                                                                    if (tkn[pos].CP == "}")
+                                                                    if (pos + 1 < tkn.Length)
                                                                     {
-                                                                        if (pos + 1 < tkn.Length)
-                                                                        {
-                                                                            pos++;
+                                                                        pos++;
 
-                                                                        }
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
-                                                                        {
-                                                                            body();
-                                                                        }
                                                                     }
                                                                 }
                                                                 else
                                                                 {
-                                                                    Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                                                                    while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
+                                                                    {
+                                                                        body();
+                                                                    }
                                                                 }
                                                             }
+                                                            else
+                                                            {
+                                                                Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("Err at line: " + tkn[pos].LN);
                                                         }
                                                     }
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine("Err at line: " + tkn[pos].LN);
                                                 }
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        Console.WriteLine("Err at line: " + tkn[pos].LN);
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Err at line: " + tkn[pos].LN);
+                            }
                         }
+                       
                     }
                 }
             }
@@ -207,14 +231,24 @@ namespace JSCompiler
                                                 Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
                                             }
                                         }
+                                        else {
+                                            Console.WriteLine("Err at line: " + tkn[pos].LN);
+                                        }
                                     }
                                 }
                             }
-                            else {
+                            else
+                            {
                                 Console.WriteLine("Unexpected ) at line: " + tkn[pos].LN);
                             }
 
                         }
+                        else {
+                            Console.WriteLine("Err at line: " + tkn[pos].LN);
+                        }
+                    }
+                    else {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
                     }
                 }
             }
@@ -274,12 +308,16 @@ namespace JSCompiler
                                 if (pos + 1 < tkn.Length)
                                 {
                                     pos++;
-                                    if (tkn[pos].CP == "while") {
+                                    if (tkn[pos].CP == "while")
+                                    {
                                         if (pos + 1 < tkn.Length)
                                         {
                                             pos++;
                                             oe();
                                         }
+                                    }
+                                    else {
+                                        Console.WriteLine("Err at line: " + tkn[pos].LN);
                                     }
 
                                 }
@@ -289,6 +327,9 @@ namespace JSCompiler
                         {
                             Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
                         }
+                    }
+                    else {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
                     }
                 }
             }
@@ -345,10 +386,19 @@ namespace JSCompiler
                                                     Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
                                                 }
                                             }
+                                            else {
+                                                Console.WriteLine("Err at line: " + tkn[pos].LN);
+                                            }
                                         }
+                                    }
+                                    else {
+                                        Console.WriteLine("Err at line: " + tkn[pos].LN);
                                     }
 
                                 }
+                            }
+                            else {
+                                Console.WriteLine("Err at line: " + tkn[pos].LN);
                             }
                         }
                     }
@@ -392,12 +442,14 @@ namespace JSCompiler
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
-                        if (tkn[pos].CP == "(") {
+                        if (tkn[pos].CP == "(")
+                        {
                             if (pos + 1 < tkn.Length)
                             {
                                 pos++;
                                 oe();
-                                if (tkn[pos].CP == ")") {
+                                if (tkn[pos].CP == ")")
+                                {
                                     if (pos + 1 < tkn.Length)
                                     {
                                         pos++;
@@ -414,21 +466,33 @@ namespace JSCompiler
 
                                                     }
                                                 }
-                                                else {
+                                                else
+                                                {
                                                     while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
                                                     {
                                                         body();
                                                     }
                                                 }
                                             }
-                                            else {
-                                                Console.WriteLine("Unexpected End of file at line: "+tkn[pos].LN);
+                                            else
+                                            {
+                                                Console.WriteLine("Unexpected End of file at line: " + tkn[pos].LN);
                                             }
                                         }
+                                        else
+                                        {
+                                            Console.WriteLine("Err at line: " + tkn[pos].LN);
+                                        }
+                                    }
+                                    else {
+                                        Console.WriteLine("Err at line: " + tkn[pos].LN);
                                     }
                                 }
-                                
+
                             }
+                        }
+                        else {
+                            Console.WriteLine("Err at line: " + tkn[pos].LN);
                         }
                     }
                 }
@@ -438,7 +502,10 @@ namespace JSCompiler
         public void body() {
             if (pos < tkn.Length) {
                 stmnt();
-                oe();
+                if (tkn[pos].CP != "}")
+                {
+                    oe();
+                }
             }
         }
 
@@ -541,6 +608,7 @@ namespace JSCompiler
                 }
                 else {
                     Console.WriteLine("Err at line: "+tkn[pos].LN);
+                    pos--;
                     return;
                 }
             }
@@ -618,14 +686,22 @@ namespace JSCompiler
         public void f() {
             if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
             {
-                if (tkn[pos].CP == "ID") {
+                if (tkn[pos].CP == "ID")
+                {
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
                         f_();
                     }
                 }
-                return;
+                else {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        return;
+                    }
+                }
+                
             }
             else if (tkn[pos].VP == "!")
             {
@@ -637,6 +713,7 @@ namespace JSCompiler
             }
             else
             {
+                Console.WriteLine("Err at line: " + tkn[pos].LN);
                 if (pos + 1 < tkn.Length)
                 {
                     pos++;                       /* Problem Here if i dont increment it goes into infinite loop*/
