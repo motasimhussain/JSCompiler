@@ -48,6 +48,9 @@ namespace JSCompiler
                 case "ID":
                     assign();
                     break;
+                case "ID_OP":
+                    e();
+                    break;
                 case "switch":
                     switch_case();
                     break;
@@ -173,7 +176,8 @@ namespace JSCompiler
                 if (pos + 1 < tkn.Length)
                 {
                     pos++;
-                    if (tkn[pos].CP == "AS_OP") {
+                    if ((tkn[pos].CP == "AS_OP"))
+                    {
                         if (pos + 1 < tkn.Length)
                         {
                             pos++;
@@ -182,6 +186,15 @@ namespace JSCompiler
                     }
                     else if (tkn[pos].CP == "(")
                     {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            p_l();
+                        }
+                    }
+                    else if ((tkn[pos].CP == "ID_OP"))
+                    {
+                        pos--;
                         e();
                     }
                     else {
@@ -528,8 +541,11 @@ namespace JSCompiler
                     }
                 }
             }
-            else if (!(tkn[pos].CP == ")") || !(tkn[pos].CP == "{"))
+            else if ((tkn[pos].CP == ")"))
             {
+                return;
+            }
+            else {
                 Console.WriteLine("Invalid Parameter Declaration at Line: " + tkn[pos].LN);
             }
         }
@@ -798,7 +814,13 @@ namespace JSCompiler
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
-                        f_();
+                        if (tkn[pos].CP == "ID_OP")
+                        {
+                            f_();
+                        }
+                        else {
+                            return;
+                        }
                     }
                 }
                 else {
@@ -808,7 +830,32 @@ namespace JSCompiler
                         return;
                     }
                 }
-                
+
+            }
+            else if (tkn[pos].CP == "ID_OP")
+            {
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == "ID")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            if (tkn[pos].CP == ";")
+                            {
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    pos++;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        Console.WriteLine("Err at line: " + tkn[pos].LN);
+                    }
+                }
             }
             else if (tkn[pos].VP == "!")
             {
@@ -821,11 +868,6 @@ namespace JSCompiler
             else
             {
                 Console.WriteLine("Err at line: " + tkn[pos].LN);
-                if (pos + 1 < tkn.Length)
-                {
-                    pos++;                       /* Problem Here if i dont increment it goes into infinite loop*/
-                    oe();
-                }
                 return;
             }
         }
@@ -854,6 +896,20 @@ namespace JSCompiler
                     }
                     else{
                         p_l();
+                    }
+                }
+            }
+            else if(tkn[pos].CP == "ID_OP"){
+                if (pos + 1 < tkn.Length)
+                {
+                    pos++;
+                    if (tkn[pos].CP == ";")
+                    {
+                        if (pos + 1 < tkn.Length)
+                        {
+                            pos++;
+                            return;
+                        }
                     }
                 }
             }
@@ -886,11 +942,14 @@ namespace JSCompiler
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Err: Missing Terminator at line: "+tkn[pos].LN);
+                                    Console.WriteLine("Err: Missing Terminator at line: " + tkn[pos].LN);
                                 }
                             }
                         }
                     }
+                }
+                else {
+                    Console.WriteLine("ERR: Invalid Argument At Line: " + tkn[pos].LN);
                 }
             }
             else {

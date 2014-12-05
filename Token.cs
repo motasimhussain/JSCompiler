@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace JSCompiler
 {
     class Token{
+
         private string cp;
         private string vp;
         private string ln;
 
         public string CP { 
-            get{return cp;}
+            get { return cp; }
             set { cp = value; } 
         }
 
@@ -27,5 +28,6 @@ namespace JSCompiler
             get { return ln; }
             set { ln = value; }
         }
+
     }
 }
