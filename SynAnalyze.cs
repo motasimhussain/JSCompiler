@@ -19,7 +19,6 @@ namespace JSCompiler
             while (pos+1 < tkn.Length)
             {
                 stmnt();
-                pos++;
             }
         }
 
@@ -818,6 +817,25 @@ namespace JSCompiler
                         {
                             f_();
                         }
+                        else if (tkn[pos].CP == "AS_OP")
+                        {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                e();
+                                if (tkn[pos].CP == ";")
+                                {
+                                    if (pos + 1 < tkn.Length)
+                                    {
+                                        pos++;
+                                        return;
+                                    }
+                                }
+                                else {
+                                    Console.WriteLine("Err at line: " + tkn[pos].LN);
+                                }
+                            }
+                        }
                         else {
                             return;
                         }
@@ -827,6 +845,14 @@ namespace JSCompiler
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
+                        if (tkn[pos].CP == ";")
+                        {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                return;
+                            }
+                        }
                         return;
                     }
                 }
@@ -916,7 +942,7 @@ namespace JSCompiler
         }
 
         public void p_l() {
-            if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM" || tkn[pos].CP == ",")
+            if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM" || tkn[pos].CP == "," || tkn[pos].CP == ")")
             {
                 if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
                 {
@@ -945,6 +971,21 @@ namespace JSCompiler
                                     Console.WriteLine("Err: Missing Terminator at line: " + tkn[pos].LN);
                                 }
                             }
+                        }
+                    }
+                }
+                else if (tkn[pos].CP == ")")
+                {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        if (tkn[pos].CP == ";")
+                        {
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                            }
+                            return;
                         }
                     }
                 }
