@@ -10,6 +10,9 @@ namespace JSCompiler
     {
         Token[] tkn;
         int pos = 0;
+        List<SymTbl> symArr = new List<SymTbl>();
+        SymTbl symTbl;
+        int scope = 0;
         public SynAnalyze(Token[] tkn) {
             this.tkn = tkn;
             analyze();
@@ -19,6 +22,7 @@ namespace JSCompiler
             while (pos+1 < tkn.Length)
             {
                 stmnt();
+
             }
         }
 
@@ -180,7 +184,7 @@ namespace JSCompiler
                         if (pos + 1 < tkn.Length)
                         {
                             pos++;
-                            e();
+                            oe();
                         }
                     }
                     else if (tkn[pos].CP == "(")
@@ -241,6 +245,7 @@ namespace JSCompiler
                                                         pos++;
                                                         if (tkn[pos].CP == "{")
                                                         {
+                                                            scope++;
                                                             if (pos + 1 < tkn.Length)
                                                             {
                                                                 pos++;
@@ -251,6 +256,7 @@ namespace JSCompiler
                                                                         pos++;
 
                                                                     }
+                                                                    scope--;
                                                                 }
                                                                 else
                                                                 {
@@ -258,6 +264,7 @@ namespace JSCompiler
                                                                     {
                                                                         body();
                                                                     }
+                                                                    scope--;
                                                                 }
                                                             }
                                                             else
@@ -319,11 +326,13 @@ namespace JSCompiler
                                         pos++;
                                         if (tkn[pos].CP == "{")
                                         {
+                                            scope++;
                                             if (pos + 1 < tkn.Length)
                                             {
                                                 pos++;
                                                 if (tkn[pos].CP == "}")
                                                 {
+                                                    pos--;
                                                     if (pos + 1 < tkn.Length)
                                                     {
                                                         pos++;
@@ -387,8 +396,12 @@ namespace JSCompiler
                 if (pos + 1 < tkn.Length)
                 {
                     pos++;
-                    if (tkn[pos].CP == "if") {
+                    if (tkn[pos].CP == "if")
+                    {
                         if_else();
+                    }
+                    else {
+                        pos--;
                     }
                 }
             }
@@ -462,6 +475,13 @@ namespace JSCompiler
                 {
                     pos++;
                     if (tkn[pos].CP == "ID") {
+                        if (!lookup(tkn[pos]))
+                        {
+                            insert(tkn[pos]);
+                        }
+                        else {
+                            Console.WriteLine("Function Redeclaration at line: " + tkn[pos].LN);
+                        }
                         if (pos + 1 < tkn.Length)
                         {
                             pos++;
@@ -478,6 +498,7 @@ namespace JSCompiler
                                             pos++;
                                             if (tkn[pos].CP == "{")
                                             {
+                                                scope++;
                                                 if (pos + 1 < tkn.Length)
                                                 {
                                                     pos++;
@@ -488,12 +509,18 @@ namespace JSCompiler
                                                             pos++;
 
                                                         }
+                                                        scope--;
                                                     }
                                                     else
                                                     {
                                                         while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
                                                         {
                                                             body();
+                                                        }
+                                                        scope--;
+                                                        if (pos + 1 < tkn.Length)
+                                                        {
+                                                            pos++;
                                                         }
                                                     }
                                                 }
@@ -590,6 +617,11 @@ namespace JSCompiler
                                                     while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
                                                     {
                                                         body();
+                                                        if (pos + 1 < tkn.Length)
+                                                        {
+                                                            pos++;
+
+                                                        }
                                                     }
                                                 }
                                             }
@@ -621,10 +653,10 @@ namespace JSCompiler
         public void body() {
             if (pos < tkn.Length) {
                 stmnt();
-                if (tkn[pos].CP != "}")
-                {
-                    oe();
-                }
+                //if (tkn[pos].CP != "}")
+                //{
+                //    oe();
+                //}
             }
         }
 
@@ -640,6 +672,13 @@ namespace JSCompiler
                         pos++;
                         if (tkn[pos].CP == "ID")
                         {
+                            if (!lookup(tkn[pos]))
+                            {
+                                insert(tkn[pos]);
+                            }
+                            else {
+                                Console.WriteLine("Redeclaration at: " + tkn[pos].LN);
+                            }
                             if (pos + 1 < tkn.Length)
                             {
                                 pos++;
@@ -1000,5 +1039,56 @@ namespace JSCompiler
         }
         /* ================================EXPRESSION END=================================*/
 
+        public void inc_pos() {
+            if (pos + 1 < tkn.Length)
+            {
+                pos++;
+            }
+        }
+
+
+        public void insert(Token tkn)
+        {
+            symTbl = new SymTbl();
+            symArr.Add(symTbl);
+
+            int loc = symArr.Count - 1;
+            if (loc > -1)
+            {
+                symArr[loc].N = tkn.VP;
+                symArr[loc].S = scope;
+            }
+            else {
+                symArr[0].N = tkn.VP;
+                symArr[loc].S = scope;
+            }
+        }
+
+        public bool lookup(Token tkn)
+        {
+            int fl = 0;
+            for (int i = 0; i < symArr.Count; i++)
+            {
+                if (symArr[i].N == tkn.VP && symArr[i].S == scope)
+                {
+                    fl++;
+                }
+            }
+            if (fl >= 1)
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        public void compat()
+        {
+
+        }
+
     }
+
+
 }

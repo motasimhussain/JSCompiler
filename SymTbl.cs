@@ -10,21 +10,22 @@ namespace JSCompiler
     {
         private string name;
         private string type;
-        private string scope;
+        private int scope;
+        public List<SymTbl> child = new List<SymTbl>();
 
-        public string CP
+        public string N
         {
             get { return name; }
             set { name = value; }
         }
 
-        public string VP
+        public string T
         {
             get { return type; }
             set { type = value; }
         }
 
-        public string LN
+        public int S
         {
             get { return scope; }
             set { scope = value; }
