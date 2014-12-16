@@ -23,7 +23,7 @@ namespace JSCompiler
         char[] sep = { ' ', '.', '\t', ',', ';' ,':', '"', '}', '{', '(', ')', '[', ']' };
         char[] op = { '+', '-', '*', '/', '=', '%', '&', '|', '!', '>', '<' };
         char[] num_sep = { ' ', '\t', ',', ';' };
-        string[] id = { "var", "switch", "case", "default", "function", "new", "else", "array", "void", "return", "in", "finally", "break", "while", "do", "if", "for", "Number", "String" };
+        string[] id = { "var", "switch", "case", "default","class", "function", "new", "else", "array", "void", "return", "finally", "break", "while", "do", "if", "for", "Number", "String" };
         int[,] tt_op = { { 1 }, { 2 }, { 2 } };
         int[,] tt_id = { { 1, 1, 2 }, { 1, 1, 1 }, { 2, 2, 2 } };
         int[,] tt_num = { { 1, 2, 3, 6 }, { 6, 2, 3, 6 }, { 6, 2, 3, 5 }, { 6, 4, 6, 5 }, { 6, 4, 6, 5 }, { 3, 4, 6, 6 }, { 6, 6, 6, 6 } };

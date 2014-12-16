@@ -13,12 +13,19 @@ namespace JSCompiler
         List<SymTbl> symArr = new List<SymTbl>();
         SymTbl symTbl;
         int scope = 0;
+        Stack<int> stack = new Stack<int>();
+
+        
+
         public SynAnalyze(Token[] tkn) {
             this.tkn = tkn;
+            stack.Push(scope);
             analyze();
+            
         }
 
         public void analyze() {
+            
             while (pos+1 < tkn.Length)
             {
                 stmnt();
@@ -33,6 +40,9 @@ namespace JSCompiler
                 case "var":
                     dec_st();
                     break;
+                case "class":
+                    cl();
+                    break;
                 case "while":
                     while_st();
                     break;
@@ -41,6 +51,10 @@ namespace JSCompiler
                     break;
                 case "if":
                     if_else();
+                    break;
+                case "else":
+                    else_if();
+                    o_else();
                     break;
                 case "function":
                     fn_def();
@@ -59,6 +73,62 @@ namespace JSCompiler
                     break;
             }
         }
+
+        /* =============================== CLASS START ============================ */
+
+
+        public void cl() {
+            if (pos + 1 < tkn.Length)
+            {
+                pos++;
+                if (tkn[pos].CP == "ID")
+                {
+                    body_c();
+                }
+            }
+        }
+
+        public void body_c() {
+            if (pos + 1 < tkn.Length)
+            {
+                pos++;
+                if (tkn[pos].CP == "{")
+                {
+                    scope++;
+                    if (pos + 1 < tkn.Length)
+                    {
+                        pos++;
+                        attr();
+                        methods();
+                        if (tkn[pos].CP == "}")
+                        {
+                            stack.Pop();
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public void attr() {
+            dec_st();
+        }
+        public void methods() {
+            fn_def();
+            if (pos + 1 < tkn.Length && tkn[pos].CP != "}")
+            {
+                pos++;
+                attr();
+            }
+        }
+
+
+        /* =============================== CLASS END ============================== */
+
 
         /* =============================== SWITCH START ============================ */
         public void switch_case()
@@ -189,8 +259,16 @@ namespace JSCompiler
         {
             if (pos < tkn.Length)
             {
+                if(!lookup(tkn[pos])){
+                    Console.WriteLine("Undeclared variable at: " + tkn[pos].LN);
+                }
+
                 if (pos + 1 < tkn.Length)
                 {
+                    if (tkn[pos + 1].CP == "OP")
+                    {
+                        e();
+                    }
                     pos++;
                     if ((tkn[pos].CP == "AS_OP"))
                     {
@@ -206,6 +284,10 @@ namespace JSCompiler
                         {
                             pos++;
                             p_l();
+                            
+                                if (tkn[pos].CP == ";") {
+                                    pos++;
+                                }
                         }
                     }
                     else if ((tkn[pos].CP == "ID_OP"))
@@ -294,15 +376,17 @@ namespace JSCompiler
                                         if (tkn[pos].CP == "{")
                                         {
                                             scope++;
+                                            stack.Push(scope);
                                             if (pos + 1 < tkn.Length)
                                             {
                                                 pos++;
                                                 if (tkn[pos].CP == "}")
                                                 {
+                                                    stack.Pop();
                                                     if (pos + 1 < tkn.Length)
                                                     {
                                                         pos++;
-                                                        if (tkn[pos].CP == "else")
+                                                    if (tkn[pos].CP == "else")
                                                         {
                                                             else_if();
                                                             o_else();
@@ -314,11 +398,14 @@ namespace JSCompiler
                                                     while (tkn[pos].CP != "}" && pos + 1 < tkn.Length)
                                                     {
                                                         if_body();
-                                                        if (pos + 1 < tkn.Length)
+                                                        if (pos + 1 < tkn.Length && tkn[pos].CP == "}")
                                                         {
+                                                            stack.Pop();
                                                             pos++;
                                                         }
+
                                                     }
+                                                    
                                                 }
                                             }
                                             else
@@ -558,11 +645,14 @@ namespace JSCompiler
         public void body() {
             if (tkn[pos].CP == "{")
             {
+                scope++;
+                stack.Push(scope);
                 if (pos + 1 < tkn.Length)
                 {
                     pos++;
                     if (tkn[pos].CP == "}")
                     {
+                        stack.Pop();
                         if (pos + 1 < tkn.Length)
                         {
                             pos++;
@@ -582,6 +672,7 @@ namespace JSCompiler
 
                             }
                         }
+                        stack.Pop();
                     }
                 }
                 else
@@ -632,7 +723,7 @@ namespace JSCompiler
                 }
                 else {
                     /* Error goes here*/
-                    Console.WriteLine("Incorrect statement or missing a terminator at line: "+tkn[pos].LN);
+                    //Console.WriteLine("Incorrect statement or missing a terminator at line: "+tkn[pos].LN);
                 }
             }
         }
@@ -656,22 +747,56 @@ namespace JSCompiler
 
         public void init2() {
             if (pos < tkn.Length) {
-                if (tkn[pos].CP == "ID") {
+                if (tkn[pos].CP == "ID")
+                {
                     if (pos + 1 < tkn.Length)
                     {
-                        pos++;
-                        init();
+                        if (tkn[pos + 1].CP == "OP")
+                        {
+                            e();
+                        }
+                        else
+                        {
+                            if (lookup(tkn[pos]))
+                            {
+                                if (pos + 1 < tkn.Length)
+                                {
+                                    if (!compat(tkn[pos], tkn[pos - 2], tkn[pos - 1]) && tkn[pos - 3].CP != "var")
+                                    {
+                                        Console.WriteLine("Incompatible Types at: " + tkn[pos].LN);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Undeclared variable at: " + tkn[pos].LN);
+                            }
+
+                            if (pos + 1 < tkn.Length)
+                            {
+                                pos++;
+                                init();
+                            }
+                        }
                     }
                 }
                 else if (tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
                 {
+                    insertType(tkn[pos]);
+
+                    if (!compat(tkn[pos], tkn[pos - 2], tkn[pos - 1]) && tkn[pos - 3].CP != "var")
+                    {
+                        Console.WriteLine("Incompatible Types at: " + tkn[pos].LN);
+                    }
+
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
                         return;
                     }
                 }
-                else {
+                else
+                {
                     Console.WriteLine("Err at line: " + tkn[pos].LN);
                 }
             }
@@ -693,6 +818,15 @@ namespace JSCompiler
                         pos++;
                         if (tkn[pos].CP == "ID")
                         {
+                            if (!lookup(tkn[pos]))
+                            {
+                                insert(tkn[pos]);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Redeclaration at: " + tkn[pos].LN);
+                            }
+
                             if (pos + 1 < tkn.Length)
                             {
                                 pos++;
@@ -784,6 +918,31 @@ namespace JSCompiler
             {
                 if (tkn[pos].CP == "ID")
                 {
+                    if (pos + 1 < tkn.Length)
+                    {
+                        if ((tkn[pos - 2].CP == "ID" || tkn[pos - 2].CP == "STR" || tkn[pos - 2].CP == "NUM")&&tkn[pos+1].CP!="ID_OP")
+                        {
+                            if (lookup(tkn[pos]))
+                            {
+                                if (!compat(tkn[pos], tkn[pos - 2], tkn[pos - 1]) && tkn[pos - 3].CP != "var")
+                                {
+                                    Console.WriteLine("Incompatible Types at: " + tkn[pos].LN);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Undeclared variable at: " + tkn[pos].LN);
+                            }
+                        }
+                        else if (tkn[pos].CP == "ID" && tkn[pos + 1].CP == "CMP_OP")
+                        {
+                            if (!lookup(tkn[pos]))
+                            {
+                                Console.WriteLine("Undeclared variable at: " + tkn[pos].LN);
+                            }
+                        }
+                    }
+
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
@@ -996,11 +1155,27 @@ namespace JSCompiler
             if (loc > -1)
             {
                 symArr[loc].N = tkn.VP;
-                symArr[loc].S = scope;
+                symArr[loc].S = stack.First();
             }
             else {
                 symArr[0].N = tkn.VP;
-                symArr[loc].S = scope;
+                symArr[loc].S = stack.First();
+            }
+        }
+
+        public void insertType(Token tkn)
+        {
+            int loc = symArr.Count - 1;
+            if (tkn.CP == "NUM" || tkn.CP == "STR")
+            {
+                if (loc > -1)
+                {
+                    symArr[loc].T = tkn.CP;
+                }
+                else
+                {
+                    symArr[0].T = tkn.CP;
+                }
             }
         }
 
@@ -1009,7 +1184,7 @@ namespace JSCompiler
             int fl = 0;
             for (int i = 0; i < symArr.Count; i++)
             {
-                if (symArr[i].N == tkn.VP && symArr[i].S == scope)
+                if (symArr[i].N == tkn.VP && (symArr[i].S == stack.First()||symArr[i].S == 0))
                 {
                     fl++;
                 }
@@ -1023,9 +1198,86 @@ namespace JSCompiler
             }
         }
 
-        public void compat()
+        public bool compat(Token tkn1,Token tkn2,Token op)
         {
+            string a="",b="";
 
+            for (int i = 0; i < symArr.Count; i++)
+            {
+                if (symArr[i].N == tkn1.VP && (symArr[i].S == stack.First() ||symArr[i].S == 0))
+                {
+                    a = symArr[i].T; 
+                }
+                if (symArr[i].N == tkn2.VP && (symArr[i].S == stack.First() || symArr[i].S == 0))
+                {
+                    b = symArr[i].T;
+                }
+            }
+
+            switch (op.CP) { 
+                case "CMP_OP":
+                    if (a == b)
+                    {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                    break;
+                case "AS_OP":
+                    if (a == b)
+                    {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                    break;
+                case "OP":
+                    if (a == b && a=="STR" && op.VP == "+")
+                    {
+                        return true;
+                    }
+                    else if (a == b && a != "STR")
+                    {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
+        }
+
+        public bool compat(Token tkn,Token op)
+        {
+            string a = "";
+
+            for (int i = 0; i < symArr.Count; i++)
+            {
+                if (symArr[i].N == tkn.VP && (symArr[i].S == stack.First() || symArr[i].S == 0))
+                {
+                    a = symArr[i].T;
+                }
+            }
+
+            switch (op.CP)
+            {
+                case "ID_OP":
+                    if (a == "NUM")
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
         }
 
     }
