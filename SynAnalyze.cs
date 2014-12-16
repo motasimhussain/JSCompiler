@@ -554,6 +554,8 @@ namespace JSCompiler
                                     param();
                                     if (tkn[pos].CP == ")")
                                     {
+                                        insert_param(p_count);
+                                        p_count = 0;
                                         if (pos + 1 < tkn.Length)
                                         {
                                             pos++;
@@ -575,8 +577,12 @@ namespace JSCompiler
             }
         }
 
-        public void param() { 
+        int p_count = 0;
+
+        public void param() {
+            
             if(tkn[pos].CP == "ID" ){
+                p_count++;
                 if (pos + 1 < tkn.Length) {
                     pos++;
                     if (tkn[pos].CP == ",")
@@ -595,6 +601,8 @@ namespace JSCompiler
             }
             else if ((tkn[pos].CP == ")"))
             {
+                insert_param(p_count);
+                p_count = 0;
                 return;
             }
             else {
@@ -1084,6 +1092,7 @@ namespace JSCompiler
             {
                 if (tkn[pos].CP == "ID" || tkn[pos].CP == "STR" || tkn[pos].CP == "NUM")
                 {
+                    p_count++;
                     if (pos + 1 < tkn.Length)
                     {
                         pos++;
@@ -1097,6 +1106,7 @@ namespace JSCompiler
                         }
                         else if (tkn[pos].CP == ")")
                         {
+                            lookParam(tkn[pos],p_count);
                             if (pos + 1 < tkn.Length)
                             {
                                 pos++;
@@ -1278,6 +1288,18 @@ namespace JSCompiler
                 default:
                     return false;
             }
+        }
+
+        public void insert_param(int param) {
+            int loc = symArr.Count - 1;
+                if (loc > -1)
+                {
+                    symArr[loc].T = "param->"+param;
+                }
+                else
+                {
+                    symArr[0].T = "param->" + param;
+                }
         }
 
     }
